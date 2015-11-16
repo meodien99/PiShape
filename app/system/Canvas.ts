@@ -59,7 +59,6 @@ module System {
 
             for(var i = 0; i < l; i++){
                 var shape = shapes[i];
-                console.log(i);
                 shape.draw(ctx);
                 shape.fill(ctx);
             }
