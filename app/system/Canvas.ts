@@ -48,7 +48,87 @@ module System {
             var html = <HTMLElement> document.body.parentNode;
             this.htmlTop = html.offsetTop || 0;
             this.htmlLeft = html.offsetLeft || 0;
+            var myState = this;
+
+            //canvas events
+
+            this._onSelectStartEvent();
+            this._onMouseDownEvent();
+            this._onMouseUpEvent();
+            this._onMouseMoveEvent();
+
+            //draw
+            setInterval(function(){
+                myState.draw();
+            }, myState.INTERVAL);
         }
+
+        private _onSelectStartEvent(): void {
+            this.canvas.addEventListener('selectstart', function(e){
+                e.preventDefault();
+                return false;
+            }, false);
+        }
+
+        private _onMouseDownEvent(): void {
+            var myState = this;
+            this.canvas.addEventListener('mousedown', function(e){
+                var mouse =  myState.getMouse(e);
+                var mx = mouse.x;
+                var my = mouse.y;
+                var shapes = myState.getShapes();
+
+                var l = shapes.length;
+
+                for(var i = l - 1; i >= 0; i--){
+                    if(shapes[i].isMouseIn(mx, my)) {
+                        var mySel = shapes[i];
+
+                        // Keep track of where in the object we clicked
+                        // so we can move it smoothly (mousemove)
+                        myState.dragOffX = mx - mySel.x;
+                        myState.dragOffY = my - mySel.y;
+
+                        myState.dragging = true;
+                        myState.currentPoint = mySel;
+                        myState.valid =false;
+                        return;
+                    }
+                }
+
+                // havent returned means we have failed to select anything.
+                // If there was an object selected, we deselect it
+
+                if(myState.currentPoint){
+                    myState.currentPoint = null;
+                    myState.valid = false; // need to clear the old currentPoint border
+                }
+            }, true);
+        }
+
+        private _onMouseMoveEvent(): void {
+            var myState = this;
+            this.canvas.addEventListener('mousemove', function(e){
+                if(myState.dragging){
+                    var mouse = myState.getMouse(e);
+                    // We don't want to drag the object by its top-left corner,
+                    // we want to drag from where we clicked.
+                    // Thats why we saved the offset and use it here
+                    myState.currentPoint.x = mouse.x - myState.dragOffX;
+                    myState.currentPoint.y = mouse.y - myState.dragOffY;
+                    myState.valid = false;
+                }
+            }, true);
+        }
+
+        private _onMouseUpEvent(): void {
+            var myState = this;
+            this.canvas.addEventListener('mouseup', function(e){
+                myState.dragging = false;
+            }, true);
+        }
+
+        //private _onDbClick():void{}
 
         public draw ():void {
             var ctx = this.ctx;

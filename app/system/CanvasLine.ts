@@ -29,12 +29,24 @@ module System {
 
                 //draw point
                 shape.draw(ctx);
-
-                shape.fill(ctx);
+                if(this.currentPoint != null && shape.isMouseIn(this.currentPoint.x, this.currentPoint.y)){
+                        shape.fill(ctx, 'red');
+                } else
+                    shape.fill(ctx);
             }
             this._drawLine();
 
-            this._drawAngleSymbol()
+            this._drawAngleSymbol();
+
+            //if(this.currentPoint != null){
+            //    //ctx.strokeStyle = this.selectionColor;
+            //    //ctx.lineWidth = this.selectionWidth;
+            //    var mySel = this.currentPoint;
+            //    ctx.arc(mySel.x, mySel.y, 5);
+            //}
+
+            // Add stuff you want draw on top all the time here
+            this.valid = true;
         }
 
         private _drawAngleSymbol(): void {
@@ -107,16 +119,6 @@ module System {
         }
 
         /**
-         * get angle between point(x,y) and x-axis
-         * @param point
-         * @return radian
-         */
-        private getAngleBasedOnXAxis(point) : number {
-            console.log(Math.atan2(point.y, point.x)*180/Math.PI);
-            return Math.atan2(point.y, point.x);
-        }
-
-        /**
          * draw angle symbol
          * @param p3
          * @param p2 <--- angle here
@@ -176,7 +178,7 @@ module System {
                  *                   .p3/1
                  *
                  */
-                else if ((p2.y < p1.y && p2.y > p3.y) || (p2.y < p3.y && p2.y > p1.y))
+                else if ((p2.y <= p1.y && p2.y >= p3.y) || (p2.y <= p3.y && p2.y >= p1.y))
                     ctx.fillText(angleText, p2.x + 20, p2.y + angle / 8);
 
                 /**
@@ -188,7 +190,7 @@ module System {
                  *    .p2
                  *
                  */
-                else if (p2.y > p1.y && p2.y > p3.y)
+                else if (p2.y >= p1.y && p2.y >= p3.y)
                     ctx.fillText(angleText, p2.x + 20, p2.y - 20);
                 else
                     console.log("ve kieu gi the nay");
@@ -201,7 +203,7 @@ module System {
                  *  .p3
                  *          .p1
                  */
-                if (p2.y < p1.y && p2.y < p3.y)
+                if (p2.y <= p1.y && p2.y <= p3.y)
                     ctx.fillText(angleText, p2.x - 20, p2.y + angle / 10);
                 /**
                  *
@@ -211,7 +213,7 @@ module System {
                  *
                  *          .p1/3
                  */
-                else if ((p2.y < p1.y && p2.y > p3.y) || (p2.y < p3.y && p2.y > p1.y))
+                else if ((p2.y <= p1.y && p2.y >= p3.y) || (p2.y <= p3.y && p2.y >= p1.y))
                     ctx.fillText(angleText, p2.x - 20, p2.y);
                 /**
                  *            .p1/3
@@ -222,13 +224,13 @@ module System {
                  *                      .p2
                  *
                  */
-                else if (p2.y > p1.y && p2.y > p3.y)
+                else if (p2.y >= p1.y && p2.y >= p3.y)
                     ctx.fillText(angleText, p2.x - angle/10, p2.y - 20);
                 else
                     console.log("dhs ?");
             }
 
-            else if ((p2.x < p1.x && p2.x > p3.x) || (p2.x < p3.x && p2.x > p1.x)) {
+            else if ((p2.x <= p1.x && p2.x >= p3.x) || (p2.x <= p3.x && p2.x >= p1.x)) {
                 /**
                  *          .p2
                  *
@@ -236,7 +238,7 @@ module System {
                  * .p1/3
                  *
                  */
-                if (p2.y < p1.y && p2.y < p3.y)
+                if (p2.y <= p1.y && p2.y <= p3.y)
                     ctx.fillText(angleText, p2.x - angle/10, p2.y + 20);
                 /**
                  *
@@ -245,7 +247,7 @@ module System {
                  *
                  *          .p2
                  */
-                else if (p2.y > p1.y && p2.y > p3.y)
+                else if (p2.y >= p1.y && p2.y >= p3.y)
                     ctx.fillText(angleText, p2.x - angle/10, p2.y - 20);
                 /**
                  *
@@ -254,7 +256,7 @@ module System {
                  *
                  *   .p1/3
                  */
-                else if ((p2.y < p1.y && p2.y > p3.y) || (p2.y < p3.y && p2.y > p1.y))
+                else if ((p2.y <= p1.y && p2.y >= p3.y) || (p2.y <= p3.y && p2.y >= p1.y))
                     ctx.fillText(angleText, p2.x + angle/10, p2.y + 20);
                 else
                     console.log("db con case nao luon")
