@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Canvas</title>
+    <script type="text/javascript" src="bower_components/canvas-5-polyfill/canvas.js"></script>
+    <style>
+        body {
+            background-color: #e4e4e4 ;
+        }
+        #canvas {
+            background-color: #fff;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <!--<canvas id="canvas" width="400" height="400">-->
+        <!--This text is displayed if your browser does not support HTML5 Canvas.-->
+    <!--</canvas>-->
+
+    <!--<script data-main="js/index" src="node_modules/requirejs/require.js"></script>-->
+    <script src="js/three.min.js"></script>
+    <!--<script src="out.js"></script>-->
+    <script>
+        var scene, camera, renderer;
+
+        function init(){
+            scene = new THREE.Scene();
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor(0x000000, 1.0);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.x = 15;
+            camera.position.y = 16;
+            camera.position.z = 13;
+            camera.lookAt(scene.position);
+
+            var cubeGeometry = new THREE.CubeGeometry(6, 4, 6);
+            var cubeMaterial = new THREE.MeshLambertMaterial({
+                color: "red"
+            });
+            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.castShadow = true;
+            scene.add(cube);
+
+            var planeGeometry = new THREE.PlaneGeometry(20, 20);
+            var planeMaterial = new THREE.MeshLambertMaterial({
+                color : 0xcccccc
+            });
+
+            var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.receiveShadow = true;
+
+            plane.rotation.x = -0.5 * Math.PI;
+            plane.position.y = -2;
+
+            scene.add(plane);
+
+            var spotLight = new THREE.SpotLight(0xffffff);
+            spotLight.position.set(10, 20, 20);
+            spotLight.castShadow = true;
+            scene.add(spotLight);
+
+            document.body.appendChild(renderer.domElement);
+            render();
+        }
+
+        function render(){
+            // render using requestAnimationFrame
+            renderer.render(scene, camera);
+            requestAnimationFrame(render);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
