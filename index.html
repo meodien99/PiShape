@@ -20,10 +20,13 @@
     <!--</canvas>-->
 
     <!--<script data-main="js/index" src="node_modules/requirejs/require.js"></script>-->
+
+    <script src="js/dat.gui.min.js"></script>
+    <script src="js/stats.min.js"></script>
     <script src="js/three.min.js"></script>
     <!--<script src="out.js"></script>-->
     <script>
-        var scene, camera, renderer;
+        var scene, camera, renderer, control, stats;
 
         function init(){
             scene = new THREE.Scene();
@@ -41,9 +44,12 @@
 
             var cubeGeometry = new THREE.CubeGeometry(6, 4, 6);
             var cubeMaterial = new THREE.MeshLambertMaterial({
-                color: "red"
+                color: "red",
+                transparent:true,
+                opacity:0.6
             });
             var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            cube.name='cube';
             cube.castShadow = true;
             scene.add(cube);
 
@@ -62,14 +68,55 @@
 
             var spotLight = new THREE.SpotLight(0xffffff);
             spotLight.position.set(10, 20, 20);
+            spotLight.shadowCameraNear = 20;
+            spotLight.shadowCameraFar = 50;
             spotLight.castShadow = true;
             scene.add(spotLight);
+
+
+
+            control = new function(){
+                this.rotationSpeed = 0.005;
+                this.opacity = 0.6;
+                this.color = cubeMaterial.color.getHex();
+            };
+
+            addControlGui(control);
+
+            addStatsObject();
 
             document.body.appendChild(renderer.domElement);
             render();
         }
 
+        function addStatsObject(){
+            stats = new Stats();
+            stats.setMode(0);
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.left = '0px';
+            stats.domElement.style.top = '0px';
+            document.body.appendChild(stats.domElement);
+        }
+
+        function addControlGui(controlObject){
+            var gui = new dat.GUI();
+            gui.add(controlObject, 'rotationSpeed', -0.01, 0.01);
+            gui.add(controlObject, 'opacity', 0.1, 1);
+            gui.addColor(controlObject, 'color');
+        }
+
         function render(){
+            //update the camera
+            var rotSpeed = control.rotationSpeed;
+            camera.position.x = camera.position.x * Math.cos(rotSpeed) + camera.position.z * Math.sin(rotSpeed);
+            camera.position.y = camera.position.z * Math.cos(rotSpeed) + camera.position.x * Math.sin(rotSpeed);
+            camera.lookAt(scene.position);
+
+            stats.update();
+
+            scene.getObjectByName('cube').material.opacity = control.opacity;
+            scene.getObjectByName('cube').material.color = new THREE.Color(control.color);
+
             // render using requestAnimationFrame
             renderer.render(scene, camera);
             requestAnimationFrame(render);
