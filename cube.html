@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Cube</title>
+    <style>
+        body {
+            background:black;
+            margin:0px;
+            overflow:hidden;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    var canvas = document.createElement('canvas'),
+            width = canvas.width = window.innerWidth,
+            height = canvas.height = window.innerHeight,
+            hWidth = width / 2,
+            hHeight = height / 2;
+    var rotation = 0;
+    var distance = 1000;
+
+    var context = canvas.getContext('2d');
+    document.body.appendChild(canvas);
+
+
+    function Point3D(x, y, z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        this.rotateX = function(angle){
+            var rad, cosa, sina, y, z;
+            rad = angle * Math.PI / 180;
+            cosa = Math.cos(rad);
+            sina = Math.sin(rad);
+
+            y = this.y * cosa - this.z * sina;
+            z = this.z * cosa + this.y * sina;
+
+            return new Point3D(this.x, y, z);
+        };
+
+        this.rotateY = function(angle){
+            var rad, cosa, sina, x, z;
+            rad = angle * Math.PI / 180;
+            cosa = Math.cos(rad);
+            sina = Math.sin(rad);
+
+            x = this.x * cosa - this.z * sina;
+            z = this.z * cosa + this.x * sina;
+
+            return new Point3D(x, this.y, z);
+        };
+
+        this.rotateZ = function(angle){
+            var rad, cosa, sina, y, x;
+            rad = angle * Math.PI / 180;
+            cosa = Math.cos(rad);
+            sina = Math.sin(rad);
+
+            x = this.x * cosa - this.y * sina;
+            y = this.y * cosa + this.x * sina;
+
+            return new Point3D(x, y, this.z);
+        };
+
+        this.project = function(viewWidth, viewHeight, fov, viewDistance) {
+            var factor, x, y;
+            factor = fov / (viewDistance + this.z);
+            x = this.x * factor + viewWidth / 2;
+            y = this.y * factor + viewHeight / 2;
+            return new Point3D(x, y, this.z);
+        };
+    }
+
+    var vertices = [
+        new Point3D(-1, 1, -1),
+        new Point3D(1, 1, -1),
+        new Point3D(1,-1,-1),
+        new Point3D(-1,-1,-1),
+        new Point3D(-1,1,1),
+        new Point3D(1,1,1),
+        new Point3D(1,-1,1),
+        new Point3D(-1,-1,1)
+    ];
+
+    // Define the vertices that compose each of the 6 faces
+    // There are number indicates to the vertex list defined above
+    var faces = [
+        [0, 1, 2, 3],
+        [1, 5, 6, 2],
+        [5, 4, 7, 6],
+        [4, 0, 3, 7],
+        [0, 4, 5, 1],
+        [3, 2, 6, 7]
+    ];
+
+    var angle = 0;
+
+
+    function render(){
+        var t = [];
+        context.clearRect(0, 0, width, height);
+        context.save();
+
+        for(var i = 0; i < vertices.length; i++){
+            var v = vertices[i];
+            var r = v.rotateX(angle).rotateY(angle);
+            var p = r.project(400, 250, 200, 4);
+            t.push(p);
+        }
+
+        var avg_z = [];
+        for(var i = 0; i < faces.length; i++){
+            var f = faces[i];
+            avg_z[i] = {
+                index : i,
+                z : (t[f[0]].z + t[f[1]].z + t[f[2]].z + t[f[3]].z) / 4.0
+            };
+        }
+
+        avg_z.sort(function(a, b){
+            return b.z - a.z;
+        });
+
+        for(var i = 0; i < faces.length; i++){
+            var f = faces[avg_z[i].index];
+
+            context.save();
+            context.beginPath();
+            context.moveTo(t[f[0]].x, t[f[0]].y);
+            context.lineTo(t[f[1]].x, t[f[1]].y);
+            context.lineTo(t[f[2]].x, t[f[2]].y);
+            context.lineTo(t[f[3]].x, t[f[3]].y);
+            context.closePath();
+            context.strokeStyle = "rgb(0,255,0)";
+            context.stroke();
+            context.restore();
+        }
+        angle += 2;
+        context.restore();
+    }
+
+    setInterval(render, 1000/30);
+</script>
+</body>
+</html>
