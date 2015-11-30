@@ -3,11 +3,13 @@
  */
     ///<reference path="Canvas.ts"/>
 ///<reference path="3DShapes/Poly.ts"/>
+///<reference path="3DShapes/Shape.ts"/>
 
 module System {
     export class Canvas3D extends Canvas {
 
         shapeName : string;
+        shapes : Array<Shape3D.Shape> = [];
 
         isCurvy : boolean = false;
         isFlat : boolean = false;
@@ -52,6 +54,12 @@ module System {
             this.isCurvy = ['cone','cylinder','sphere','hemisphere'].indexOf(this.shapeName) >= 0;
             this.isFlat = ['plane'].indexOf(this.shapeName) >= 0;
 
+            this._init();
+        }
+
+        private _init(){
+            this.shapes = [];
+            this.poly.shapeType = this.shapeName;
         }
 
         private _onTouchStart (event){
@@ -145,5 +153,32 @@ module System {
 
             return C;
         }
+
+        public update(){
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.drawShapes();
+        }
+
+        public drawShapes(){
+            var prevDepth = 0;
+            var sortNeededQ = false;
+            for(var i = 0, len = this.shapes.length; i < len; i++){
+                var shape = this.shapes[i];
+                shape.drawSurface(false, "N");
+                if(i > 0){
+                    if(shape.depth < prevDepth){
+                        sortNeededQ = true;
+                    }
+                }
+                prevDepth = shape.depth;
+            }
+            if(sortNeededQ){
+                this.shapes.sort(function(a, b){
+                    if(a.depth < b.depth) return -1;
+                    return 1;
+                });
+            }
+        }
+
     }
 }

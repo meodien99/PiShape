@@ -4,7 +4,12 @@
 
 module Shape3D {
 
-   export class Poly {
+    export class Poly {
 
+        shapeType : string;
+
+        public getSolid(){
+
+        }
     }
 }
