@@ -2,11 +2,11 @@
  * Created by madcat on 11/15/15.
  */
 
-    ///<reference path="Canvas.ts"/>
+    ///<reference path="Canvas2D.ts"/>
 ///<reference path="Circle.ts"/>
 
 module System {
-    export class CanvasLine extends Canvas {
+    export class CanvasLine extends Canvas2D {
 
         public addShapeBag(coordinates: Array<{x:number; y:number;}>):void {
             this.shapes = [];
@@ -138,11 +138,11 @@ module System {
             ctx.setLineDash([1, 2]);
             ctx.beginPath();
             ctx.moveTo(p2.x, p2.y);
-            if(Math.abs((a2 - a1)*180/Math.PI) === 90){
-                ctx.rect(p2.x, p2.y - 15, 15, 15);
-            } else {
+            //if(Math.abs((a2 - a1)*180/Math.PI) === 90){
+            //    ctx.rect(p2.x, p2.y - 15, 15, 15);
+            //} else {
                 ctx.arc(p2.x, p2.y, 15, a2, a1);
-            }
+            //}
 
             ctx.lineWidth = 2;
             ctx.closePath();
