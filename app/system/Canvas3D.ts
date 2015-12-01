@@ -14,7 +14,7 @@ module System {
         isCurvy : boolean = false;
         isFlat : boolean = false;
         isExplode : boolean = false;
-        isDragQ : boolean = false;
+        isDragQ : boolean = true;
         isDraggingQ : boolean = false;
 
         mouseX : number = 0;
@@ -30,30 +30,38 @@ module System {
         zAngle : number = 0;
 
         ratio : number;
-        transMatrix : Array<Array<number>> = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0]];
+        transMatrix;
         f : number = 500; //fov
         clrs : Array<string> = ["#ff0000", "#0000ff", "#ff9900", "#00ff00", "#ffff00", "#660066", "#99ff00", "#0099ff", "#00ff99", "#9900ff", "#ff0099", "#006666", "#666600", "#990000", "#009999", "#999900", "#003399", "#ff00ff", "#993333", "#330099"];
 
         width : number;
         height : number;
 
+        constructor(canvas){
+            super(canvas);
+            this.init();
+        }
+
         public init(){
             this.width = this.canvas.width;
             this.height = this.canvas.height;
+            this.poly = new Shape3D.Poly(this);
+            this.transMatrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0]];
 
             //add Event Listener
-            this.canvas.addEventListener('touchstart', this._onTouchStart, false);
-            this.canvas.addEventListener('touchmove', this._onTouchMove, false);
-            this.canvas.addEventListener('mousedown', this._onMouseDown, false);
-            this.canvas.addEventListener('mousemove', this._onMouseMove, false);
-            this.canvas.addEventListener('mouseup', this._onMouseUp, false);
+            this._onTouchStartEvent ();
+            this._onTouchMoveEvent();
+            this._onMouseDownEvent();
+            this._onMouseMoveEvent();
+            this._onMouseUpEvent();
         }
 
-
-        public polyhedrawMain(shapeName:string):void {
+        public polyhedraMain(shapeName:string):void {
             this.shapeName = typeof shapeName !== 'undefined' ? shapeName : 'pent-pyramid';
             this.isCurvy = ['cone','cylinder','sphere','hemisphere'].indexOf(this.shapeName) >= 0;
             this.isFlat = ['plane'].indexOf(this.shapeName) >= 0;
+            this.ratio = 1;
+            this.ctx.setTransform(this.ratio, 0 , 0, this.ratio, 0, 0);
 
             this._init();
         }
@@ -69,8 +77,85 @@ module System {
             this.animate();
         }
 
-        public animate() {
+        private animate() {
+            this.frameNo ++;
+            if(this.isDragQ){
 
+            } else {
+                this.setTransMatrix(this.xAngle, this.yAngle, this.zAngle, this.transMatrix);
+                this.update();
+            }
+            if(this.frameNo < 1e8){
+                requestAnimationFrame(this.animate.bind(this));
+            }
+        }
+
+        public restart(){
+            this.shapes = [];
+            this.poly.shapeType = this.shapeName;
+            this._setShapesFromPoly();
+            this.update();
+        }
+
+        public update(){
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.drawShapes();
+        }
+
+        public drawShapes(){
+            var prevDepth = 0;
+            var sortNeededQ = false;
+            for(var i = 0, len = this.shapes.length; i < len; i++){
+                var shape = this.shapes[i];
+                shape.drawSurface(false, "N");
+                if(i > 0){
+                    if(shape.depth < prevDepth){
+                        sortNeededQ = true;
+                    }
+                }
+                prevDepth = shape.depth;
+            }
+            if(sortNeededQ){
+                this.shapes.sort(function(a, b){
+                    if(a.depth < b.depth) return -1;
+                    return 1;
+                });
+            }
+        }
+
+        public toggleBtn(btn, onq){
+            if(onq){
+                document.getElementById(btn).classList.add("hi");
+                document.getElementById(btn).classList.remove("lo");
+            } else {
+                document.getElementById(btn).classList.add("lo");
+                document.getElementById(btn).classList.remove("hi");
+            }
+        }
+
+        public toggleExplode(){
+            this.isExplode = !this.isExplode;
+            this.toggleBtn("explodeBtn", this.isExplode);
+            this.restart();
+        }
+
+        public clrChg(){
+            var el = <any> document.getElementById('clrType');
+            if (el.selectedIndex == -1)
+                return null;
+            var t = el.options[el.selectedIndex].text;
+            this.setClrs(t);
+            this.update();
+        }
+
+        public toggleDrag(){
+            this.isDragQ = !this.isDragQ;
+            this.toggleBtn("dragBtn", this.isDragQ);
+            if(this.isDragQ){
+                document.getElementById("dragBtn").innerHTML = 'Drag';
+            } else {
+                document.getElementById("dragBtn").innerHTML = 'Spin';
+            }
         }
 
         private _setShapesFromPoly() {
@@ -99,9 +184,8 @@ module System {
                 } else {
                     for(var j = 0; j < 3; j++){
                         P[i][j] = surf[i][j] * scale;
-                        if(this.isExplode){
+                        if(this.isExplode)
                             midPt[j] += P[i][j];
-                        }
                     }
                 }
             }
@@ -119,7 +203,7 @@ module System {
         }
 
         public addShape3D(shapeType, pontArray, lineWeight, lineClr, fillClr){
-            var shape = new Shape3D.Shape(this.canvas);
+            var shape = new Shape3D.Shape(this);
             shape.transMatrix = this.transMatrix;
             shape.f = this.f;
             shape.setPts(pontArray);
@@ -160,56 +244,21 @@ module System {
         }
 
         public getClrType(){
-
-        }
-
-        private _onTouchStart (event){
-            this.isDraggingQ = true;
-            var touch = event.targetTouches[0];
-            var bRect = this.canvas.getBoundingClientRect();
-
-            this.prevMouseX = (touch.clientX - bRect.left) * (this.width / this.ratio / bRect.width);
-            this.prevMouseY = (touch.clientY - bRect.top) * (this.height / this.ratio / bRect.height);
-        }
-
-        private _onTouchMove (event){
-            var touch = event.targetTouches[0];
-            event.clientX = touch.clientX;
-            event.clientY = touch.clientY;
-            event.touchQ = true;
-            this._onMouseMove(event);
-            event.preventDefault();
-        }
-
-        private _onMouseDown (event){
-            this.isDraggingQ = true;
-            this.prevMouseX = this.mouseX;
-            this.prevMouseY = this.mouseY;
-        }
-
-        private _onMouseMove (event){
-            var bRect = this.canvas.getBoundingClientRect();
-            this.mouseX = (event.clientX - bRect.left) * (this.width / this.ratio / bRect.width);
-            this.mouseY = (event.clientY - bRect.top) * (this.height / this.ratio / bRect.height);
-
-            if(this.isDragQ){
-                if(this.isDraggingQ){
-                    this.setTransMatrix(-(this.prevMouseY - this.mouseY) * 3, (this.prevMouseX - this.mouseX)*3, 0, this.transMatrix);
-                    this.prevMouseX = this.mouseX;
-                    this.prevMouseY = this.mouseY;
-                    this.update();
+            if (this.isCurvy || this.isFlat) {
+                if (this.shapeName == 'plane') {
+                    return "Glass";
+                } else {
+                    return "Shaded";
                 }
             } else {
-                this.xAngle = -(this.mouseX - this.width / 2) / 25;
-                this.yAngle = (this.mouseY - this.height / 2) / 25;
+                var div = <any> document.getElementById('clrType');
+                if (div.selectedIndex == -1)return 'Multi';
+                return div.options[div.selectedIndex].text;
+                //return "Multi";
             }
         }
 
-        private _onMouseUp (event){
-            this.isDraggingQ = false;
-        }
-
-        public setTransMatrix(x, y, z, M): void {
+        public setTransMatrix(x, y, z, M) {
             var vectorLength = Math.sqrt(x*x + y*y + z*z);
             if(vectorLength > 0.0001){
                 x /= vectorLength;
@@ -221,10 +270,9 @@ module System {
                 var sinT = Math.sin(Theta);
                 var tanT = 1 - cosT;
                 var T = [[], [], []];
-                T[0][0] = tanT * x *x + cosT;
-                T[0][1] = tanT * x * y - sinT *z;
+                T[0][0] = tanT * x * x + cosT;
+                T[0][1] = tanT * x * y - sinT * z;
                 T[0][2] = tanT * x * z + sinT * y;
-
 
                 T[1][0] = tanT * x * y + sinT * z;
                 T[1][1] = tanT * y * y + cosT;
@@ -234,11 +282,11 @@ module System {
                 T[2][1] = tanT * y * z + sinT * x;
                 T[2][2] = tanT * z * z + cosT;
 
-                this.transMatrix = this._matrixMultiple(T, M);
+                this.transMatrix = this._matrixMatrixMultiple(T, M);
             }
         }
 
-        private _matrixMultiple(A, B): Array<Array<number>>{
+        private _matrixMatrixMultiple(A, B): Array<Array<number>>{
             var C = [[], [], []];
             C[0][0] = A[0][0] * B[0][0] + A[0][1] * B[1][0] + A[0][2] * B[2][0];
             C[0][1] = A[0][0] * B[0][1] + A[0][1] * B[1][1] + A[0][2] * B[2][1];
@@ -255,30 +303,88 @@ module System {
             return C;
         }
 
-        public update(){
-            this.ctx.clearRect(0, 0, this.width, this.height);
-            this.drawShapes();
+        /* EVENT LISTENER */
+
+        private _onTouchStartEvent (){
+            var self = this;
+            this.canvas.addEventListener('touchstart', function(event){
+                self.isDraggingQ = true;
+                var touch = event.targetTouches[0];
+                var bRect = self.canvas.getBoundingClientRect();
+
+                self.prevMouseX = (touch.clientX - bRect.left) * (self.width / self.ratio / bRect.width);
+                self.prevMouseY = (touch.clientY - bRect.top) * (self.height / self.ratio / bRect.height);
+            }, false);
         }
 
-        public drawShapes(){
-            var prevDepth = 0;
-            var sortNeededQ = false;
-            for(var i = 0, len = this.shapes.length; i < len; i++){
-                var shape = this.shapes[i];
-                shape.drawSurface(false, "N");
-                if(i > 0){
-                    if(shape.depth < prevDepth){
-                        sortNeededQ = true;
+        private _onTouchMoveEvent (){
+            var self = this;
+            this.canvas.addEventListener('touchmove', function(event:any){
+                console.log(event);
+                var touch = event.targetTouches[0];
+                event.clientX = touch.clientX;
+                event.clientY = touch.clientY;
+                event.touchQ = true;
+                self._onMouseMove(event);
+                event.preventDefault();
+            }, false);
+        }
+
+        private _onMouseDownEvent (){
+            var self = this;
+            this.canvas.addEventListener('mousedown', function(event){
+                self.isDraggingQ = true;
+                self.prevMouseX = self.mouseX;
+                self.prevMouseY = self.mouseY;
+            }, false);
+        }
+
+        private _onMouseMoveEvent (){
+            var self = this;
+            this.canvas.addEventListener('mousemove', function(event){
+                var bRect = self.canvas.getBoundingClientRect();
+                self.mouseX = (event.clientX - bRect.left) * (self.width / self.ratio / bRect.width);
+                self.mouseY = (event.clientY - bRect.top) * (self.height / self.ratio / bRect.height);
+                if(self.isDragQ){
+                    if(self.isDraggingQ){
+                        self.setTransMatrix(-(self.prevMouseY - self.mouseY) * 3, (self.prevMouseX - self.mouseX)*3, 0, self.transMatrix);
+                        self.prevMouseX = self.mouseX;
+                        self.prevMouseY = self.mouseY;
+                        self.update();
                     }
+                } else {
+                    self.xAngle = -(self.mouseX - self.width / 2) / 25;
+                    self.yAngle = (self.mouseY - self.height / 2) / 25;
                 }
-                prevDepth = shape.depth;
+
+            }, false);
+        }
+
+        private _onMouseMove(event){
+            console.log("asd");
+            var self = this;
+            var bRect = self.canvas.getBoundingClientRect();
+            self.mouseX = (event.clientX - bRect.left) * (self.width / self.ratio / bRect.width);
+            self.mouseY = (event.clientY - bRect.top) * (self.height / self.ratio / bRect.height);
+
+            if(self.isDragQ){
+                if(self.isDraggingQ){
+                    self.setTransMatrix(-(self.prevMouseY - self.mouseY) * 3, (self.prevMouseX - self.mouseX)*3, 0, self.transMatrix);
+                    self.prevMouseX = self.mouseX;
+                    self.prevMouseY = self.mouseY;
+                    self.update();
+                }
+            } else {
+                self.xAngle = -(self.mouseX - self.width / 2) / 25;
+                self.yAngle = (self.mouseY - self.height / 2) / 25;
             }
-            if(sortNeededQ){
-                this.shapes.sort(function(a, b){
-                    if(a.depth < b.depth) return -1;
-                    return 1;
-                });
-            }
+        }
+
+        private _onMouseUpEvent (){
+            var self = this;
+            this.canvas.addEventListener('mouseup',function(event){
+                self.isDraggingQ = false;
+            }, false);
         }
 
     }

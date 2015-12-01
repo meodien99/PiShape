@@ -1,42 +1,46 @@
 /**
  * Created by madcat on 11/30/15.
  */
+    ///<reference path="../Canvas3D.ts"/>
+
     ///<reference path="Pt3d.ts"/>
 ///<reference path="../2DShapes/Pt2d.ts"/>
 
 module Shape3D {
     export class Shape {
-        canvas : HTMLCanvasElement;
+        canvas : System.Canvas3D;
         ctx : CanvasRenderingContext2D;
 
         rotScanvasfMatrix = [[1, 0, 0], [0, 1, 0], [0, 0, 1], [0, 0, 0]];
         rotScanvasfQ = false;
         vCanvasQ = false;
 
-        eye = new Pt3d();
+        eye: Pt3d;
         pts = [];
 
         depth : number;
 
-        shapeType : string;
-        shapeSource : string;
-        clrMethod : string ;
+        shapeType : string = "surf";
+        //shapeSource : string;
+        clrMethod : string = "None";
 
-        transMatrix = [];
+        transMatrix;
         f : number = 500;
 
         lineWeight : number;
-        lineClr : string;
-        fillClr : string;
+        lineClr : string = 'white';
+        fillClr : string = 'rgba(255,0,0,0.9)';
 
         showPtsQ : boolean = false;
-        centroid = new Pt3d();
-        vcanvas3d = new Pt3d;
+        centroid: Pt3d = new Pt3d();
+        vcanvas3d: Pt3d = new Pt3d();
         hideCount : number = 0;
 
-        constructor (canvas){
+        constructor (canvas:System.Canvas3D){
             this.canvas = canvas;
-            this.ctx = this.canvas.getContext('2d');
+            this.transMatrix = this.rotScanvasfMatrix;
+            this.ctx = this.canvas.ctx;
+            this.eye = new Pt3d();
             this.eye.setMe(0, 0, 400);
         }
 
@@ -54,7 +58,7 @@ module Shape3D {
                 if(aboutEyeQ){
 
                 } else {
-                    ptRot = this.matrixPointMultiple(this.transMatrix, pt3d);
+                    ptRot = this.matrixPointMultiple(this.canvas.transMatrix, pt3d);
                     clips.push(ptRot);
                 }
                 zMin = Math.min(zMin, ptRot.z);
@@ -142,7 +146,7 @@ module Shape3D {
             this.pts = [];
             for(var i = 0; i < pointArray.length; i++){
                 var p3d = new Pt3d();
-                p3d.setMe(pointArray[i][0], pointArray[i][1], pointArray[i][3]);
+                p3d.setMe(pointArray[i][0], pointArray[i][1], pointArray[i][2]);
                 this.pts.push(p3d);
             }
             this.calcCentroid();
@@ -169,10 +173,17 @@ module Shape3D {
                     break;
                 default:
             }
-            var angle = this._getNormalAngle(this.pts, 0);
+            var angle = Shape3D.Shape.getNormalAngle(this.pts, 0);
+            var dark = (1 - angle/ Math.PI);
+            var red = (0 * 255 >> 0) + 1;
+            var grn = (dark * 255 >> 0) + 1;
+            angle = Shape3D.Shape.getNormalAngle(this.pts, 1);
+            dark = (1 - angle / Math.PI);
+            var blu = (0 * 255 >> 0) + 1;
+            this.fillClr = 'rgba(' + red + ',' + grn + ',' + blu + ',' + alpha +')';
         }
 
-        private _getNormalAngle(points, dimN){
+        public static getNormalAngle(points, dimN){
             var a = [points[1].x - points[0].x, points[1].y - points[0].y, points[1].z - points[0].z];
             var b = [points[2].x - points[1].x, points[2].y - points[1].y, points[2].z - points[1].z];
             var cross = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];

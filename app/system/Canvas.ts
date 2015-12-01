@@ -8,7 +8,6 @@ module System {
         constructor ( canvas : HTMLCanvasElement) {
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
-            this.init();
         }
         public init():void {}
     }

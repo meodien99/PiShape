@@ -7,5 +7,8 @@ module Shape2D {
     export class Pt2d {
         x:number = 0;
         y:number = 0;
+
+        constructor() {}
+
     }
 }

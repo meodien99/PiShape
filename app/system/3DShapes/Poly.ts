@@ -5,9 +5,11 @@
 
 module Shape3D {
 
-    export class Poly extends Shape{
+    export class Poly extends Shape {
 
         scale : number = 90;
+        shapeType:string = 'cube';
+        shapeSource:string = 'calc';
 
         public getSolid() {
             var C = [];
@@ -56,7 +58,6 @@ module Shape3D {
                     this.clrMethod = "Smooth";
                     break;
             }
-
             return C;
         }
 

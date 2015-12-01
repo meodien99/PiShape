@@ -19,7 +19,7 @@
 //canvas.draw();
 var canvas = new System.CanvasLine(<HTMLCanvasElement> document.getElementById('canvas'));
 
-var points = [{x:50, y:50}, {x: 250, y:200}, {x: 180, y: 30}];
+var points = [{x:50, y:50}, {x: 250, y:200}, {x: 180, y: 30}, {x: 210, y:110}];
 
 canvas.addShapeBag(points);
 canvas.draw();
