@@ -22,6 +22,7 @@ module System {
         prevMouseX : number = 0;
         prevMouseY : number = 0;
 
+        frameNo : number = 0;
 
         poly : Shape3D.Poly;
         xAngle : number = 2;
@@ -60,6 +61,106 @@ module System {
         private _init(){
             this.shapes = [];
             this.poly.shapeType = this.shapeName;
+            this._setShapesFromPoly();
+            this.setTransMatrix(200, 50, 0, this.transMatrix);
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            this.drawShapes();
+            this.frameNo = 0;
+            this.animate();
+        }
+
+        public animate() {
+
+        }
+
+        private _setShapesFromPoly() {
+            var C = this.poly.getSolid();
+            var i = 0;
+            while(i < C.length){
+                var surf = C[i];
+                this.addShape3D("surface", this.coords2Lines(surf, this.poly.scale), 1, "#fff", "rgba(0, 255, 0, 0.3)");
+                i++;
+            }
+            this.setClrs(this.getClrType());
+        }
+
+        public coords2Lines(surf, scale){
+            var P = [], toNum;
+            var midPt = [0, 0, 0]; //mid point
+            for(var i = 0; i < surf.length; i++){
+                if(i < surf.length - 1){
+                    toNum = i + 1;
+                } else {
+                    toNum = 0;
+                }
+                P[i] = [];
+                if(surf[i] == undefined){
+                    console.error("Error surface >>> " + i, surf[i]);
+                } else {
+                    for(var j = 0; j < 3; j++){
+                        P[i][j] = surf[i][j] * scale;
+                        if(this.isExplode){
+                            midPt[j] += P[i][j];
+                        }
+                    }
+                }
+            }
+            if(this.isExplode){
+                for(var j = 0; j < 3; j++){
+                    midPt[j] /= surf.length;
+                }
+                for(var i = 0; i < surf.length; i++){
+                    for(var j = 0; j < 3; j++){
+                        P[i][j] += midPt[j]/2;
+                    }
+                }
+            }
+            return P;
+        }
+
+        public addShape3D(shapeType, pontArray, lineWeight, lineClr, fillClr){
+            var shape = new Shape3D.Shape(this.canvas);
+            shape.transMatrix = this.transMatrix;
+            shape.f = this.f;
+            shape.setPts(pontArray);
+            shape.shapeType = shapeType;
+            shape.lineWeight = lineWeight;
+            shape.lineClr = lineClr;
+            shape.fillClr = fillClr;
+            this.shapes.push(shape);
+        }
+
+        public setClrs(clrMethod){
+            for(var i = 0; i < this.shapes.length; i++){
+                var shape = this.shapes[i];
+                shape.clrMethod = clrMethod;
+                switch (clrMethod){
+                    case "Multi":
+                        shape.fillClr = Shape3D.Shape.convertHexClr(this.clrs[i % this.clrs.length], 0.7);
+                        break;
+                    case "Two":
+                        shape.fillClr = Shape3D.Shape.convertHexClr(this.clrs[i % 2], 0.8);
+                        break;
+                    case "Smooth":
+                        var fromMiddle = Math.abs(this.shapes.length / 2 - i);
+                        var blu = fromMiddle * 8 + 1;
+                        var ccc = Shape3D.Shape.rgb2hex([blu, 128, blu]);
+                        shape.fillClr = ccc;
+                        break;
+                    case "Glass":
+                    case "PureGlass":
+                        shape.doShading();
+                        break;
+                    case "Shaded":
+                        shape.doShading();
+                        break;
+                    default:
+                }
+            }
+        }
+
+        public getClrType(){
+
         }
 
         private _onTouchStart (event){
