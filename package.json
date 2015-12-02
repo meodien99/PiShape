@@ -1,0 +1,29 @@
+{
+  "name": "pishape",
+  "version": "1.0.0",
+  "description": "An Application shows how the geometric shapes interactive",
+  "main": "js/main",
+  "dependencies": {
+    "requirejs": "^2.1.20"
+  },
+  "devDependencies": {
+    "babel": "^6.0.15"
+  },
+  "scripts": {
+    "test": "hmm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meodien99/PiShape.git"
+  },
+  "keywords": [
+    "canvas",
+    "shape"
+  ],
+  "author": "madcat",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meodien99/PiShape/issues"
+  },
+  "homepage": "https://github.com/meodien99/PiShape#readme"
+}

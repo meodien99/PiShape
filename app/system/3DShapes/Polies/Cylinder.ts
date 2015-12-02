@@ -50,5 +50,21 @@ module Shape3D {
             }
             return D;
         }
+
+        //tri-prism-n
+        public static createTriPrismN(){
+            return Cylinder.createNCylinder(3);
+        }
+
+        //tri-prism
+        public static createTriPrism(){
+            var a = 1.2,
+            b = 0.7,
+            c = 0.7,
+            d = 0.6;
+
+            var D = [[[-a, -b, -c], [-a, -b, c], [-a, d, 0]], [[a, -b, -c], [a, -b, c], [a, d, 0]], [[-a, -b, -c], [a, -b, -c], [a, -b, c], [-a, -b, c]], [[-a, -b, c], [a, -b, c], [a, d, 0], [-a, d, 0]], [[-a, -b, -c], [-a, d, 0], [a, d, 0], [a, -b, -c]]];
+            return D;
+        }
     }
 }

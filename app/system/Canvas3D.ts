@@ -1,7 +1,8 @@
 /**
  * Created by madcat on 11/30/15.
  */
-    ///<reference path="Canvas.ts"/>
+
+///<reference path="Canvas.ts"/>
 ///<reference path="3DShapes/Poly.ts"/>
 ///<reference path="3DShapes/Shape.ts"/>
 
@@ -307,7 +308,7 @@ module System {
 
         private _onTouchStartEvent (){
             var self = this;
-            this.canvas.addEventListener('touchstart', function(event){
+            this.canvas.addEventListener('touchstart', function(event:any){
                 self.isDraggingQ = true;
                 var touch = event.targetTouches[0];
                 var bRect = self.canvas.getBoundingClientRect();

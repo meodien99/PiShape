@@ -15,114 +15,114 @@
     </style>
 </head>
 <body>
-    <!--<canvas id="canvas" width="400" height="400">-->
-        <!--This text is displayed if your browser does not support HTML5 Canvas.-->
-    <!--</canvas>-->
+    <canvas id="canvas" width="400" height="400">
+        This text is displayed if your browser does not support HTML5 Canvas.
+    </canvas>
 
     <!--<script data-main="js/index" src="node_modules/requirejs/require.js"></script>-->
 
-    <script src="js/dat.gui.min.js"></script>
-    <script src="js/stats.min.js"></script>
-    <script src="js/three.min.js"></script>
-    <!--<script src="out.js"></script>-->
-    <script>
-        var scene, camera, renderer, control, stats;
+    <!--<script src="js/dat.gui.min.js"></script>-->
+    <!--<script src="js/stats.min.js"></script>-->
+    <!--<script src="js/three.min.js"></script>-->
+    <script src="out.js"></script>
+    <!--<script>-->
+        <!--var scene, camera, renderer, control, stats;-->
 
-        function init(){
-            scene = new THREE.Scene();
+        <!--function init(){-->
+            <!--scene = new THREE.Scene();-->
 
-            renderer = new THREE.WebGLRenderer();
-            renderer.setClearColor(0x000000, 1.0);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
+            <!--renderer = new THREE.WebGLRenderer();-->
+            <!--renderer.setClearColor(0x000000, 1.0);-->
+            <!--renderer.setSize(window.innerWidth, window.innerHeight);-->
+            <!--renderer.shadowMap.enabled = true;-->
 
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.x = 15;
-            camera.position.y = 16;
-            camera.position.z = 13;
-            camera.lookAt(scene.position);
+            <!--camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);-->
+            <!--camera.position.x = 15;-->
+            <!--camera.position.y = 16;-->
+            <!--camera.position.z = 13;-->
+            <!--camera.lookAt(scene.position);-->
 
-            var cubeGeometry = new THREE.CubeGeometry(6, 4, 6);
-            var cubeMaterial = new THREE.MeshLambertMaterial({
-                color: "red",
-                transparent:true,
-                opacity:0.6
-            });
-            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-            cube.name='cube';
-            cube.castShadow = true;
-            scene.add(cube);
+            <!--var cubeGeometry = new THREE.CubeGeometry(6, 4, 6);-->
+            <!--var cubeMaterial = new THREE.MeshLambertMaterial({-->
+                <!--color: "red",-->
+                <!--transparent:true,-->
+                <!--opacity:0.6-->
+            <!--});-->
+            <!--var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);-->
+            <!--cube.name='cube';-->
+            <!--cube.castShadow = true;-->
+            <!--scene.add(cube);-->
 
-            var planeGeometry = new THREE.PlaneGeometry(20, 20);
-            var planeMaterial = new THREE.MeshLambertMaterial({
-                color : 0xcccccc
-            });
+            <!--var planeGeometry = new THREE.PlaneGeometry(20, 20);-->
+            <!--var planeMaterial = new THREE.MeshLambertMaterial({-->
+                <!--color : 0xcccccc-->
+            <!--});-->
 
-            var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-            plane.receiveShadow = true;
+            <!--var plane = new THREE.Mesh(planeGeometry, planeMaterial);-->
+            <!--plane.receiveShadow = true;-->
 
-            plane.rotation.x = -0.5 * Math.PI;
-            plane.position.y = -2;
+            <!--plane.rotation.x = -0.5 * Math.PI;-->
+            <!--plane.position.y = -2;-->
 
-            scene.add(plane);
+            <!--scene.add(plane);-->
 
-            var spotLight = new THREE.SpotLight(0xffffff);
-            spotLight.position.set(10, 20, 20);
-            spotLight.shadowCameraNear = 20;
-            spotLight.shadowCameraFar = 50;
-            spotLight.castShadow = true;
-            scene.add(spotLight);
+            <!--var spotLight = new THREE.SpotLight(0xffffff);-->
+            <!--spotLight.position.set(10, 20, 20);-->
+            <!--spotLight.shadowCameraNear = 20;-->
+            <!--spotLight.shadowCameraFar = 50;-->
+            <!--spotLight.castShadow = true;-->
+            <!--scene.add(spotLight);-->
 
 
 
-            control = new function(){
-                this.rotationSpeed = 0.005;
-                this.opacity = 0.6;
-                this.color = cubeMaterial.color.getHex();
-            };
+            <!--control = new function(){-->
+                <!--this.rotationSpeed = 0.005;-->
+                <!--this.opacity = 0.6;-->
+                <!--this.color = cubeMaterial.color.getHex();-->
+            <!--};-->
 
-            addControlGui(control);
+            <!--addControlGui(control);-->
 
-            addStatsObject();
+            <!--addStatsObject();-->
 
-            document.body.appendChild(renderer.domElement);
-            render();
-        }
+            <!--document.body.appendChild(renderer.domElement);-->
+            <!--render();-->
+        <!--}-->
 
-        function addStatsObject(){
-            stats = new Stats();
-            stats.setMode(0);
-            stats.domElement.style.position = 'absolute';
-            stats.domElement.style.left = '0px';
-            stats.domElement.style.top = '0px';
-            document.body.appendChild(stats.domElement);
-        }
+        <!--function addStatsObject(){-->
+            <!--stats = new Stats();-->
+            <!--stats.setMode(0);-->
+            <!--stats.domElement.style.position = 'absolute';-->
+            <!--stats.domElement.style.left = '0px';-->
+            <!--stats.domElement.style.top = '0px';-->
+            <!--document.body.appendChild(stats.domElement);-->
+        <!--}-->
 
-        function addControlGui(controlObject){
-            var gui = new dat.GUI();
-            gui.add(controlObject, 'rotationSpeed', -0.01, 0.01);
-            gui.add(controlObject, 'opacity', 0.1, 1);
-            gui.addColor(controlObject, 'color');
-        }
+        <!--function addControlGui(controlObject){-->
+            <!--var gui = new dat.GUI();-->
+            <!--gui.add(controlObject, 'rotationSpeed', -0.01, 0.01);-->
+            <!--gui.add(controlObject, 'opacity', 0.1, 1);-->
+            <!--gui.addColor(controlObject, 'color');-->
+        <!--}-->
 
-        function render(){
-            //update the camera
-            var rotSpeed = control.rotationSpeed;
-            camera.position.x = camera.position.x * Math.cos(rotSpeed) + camera.position.z * Math.sin(rotSpeed);
-            camera.position.y = camera.position.z * Math.cos(rotSpeed) + camera.position.x * Math.sin(rotSpeed);
-            camera.lookAt(scene.position);
+        <!--function render(){-->
+            <!--//update the camera-->
+            <!--var rotSpeed = control.rotationSpeed;-->
+            <!--camera.position.x = camera.position.x * Math.cos(rotSpeed) + camera.position.z * Math.sin(rotSpeed);-->
+            <!--camera.position.y = camera.position.z * Math.cos(rotSpeed) + camera.position.x * Math.sin(rotSpeed);-->
+            <!--camera.lookAt(scene.position);-->
 
-            stats.update();
+            <!--stats.update();-->
 
-            scene.getObjectByName('cube').material.opacity = control.opacity;
-            scene.getObjectByName('cube').material.color = new THREE.Color(control.color);
+            <!--scene.getObjectByName('cube').material.opacity = control.opacity;-->
+            <!--scene.getObjectByName('cube').material.color = new THREE.Color(control.color);-->
 
-            // render using requestAnimationFrame
-            renderer.render(scene, camera);
-            requestAnimationFrame(render);
-        }
+            <!--// render using requestAnimationFrame-->
+            <!--renderer.render(scene, camera);-->
+            <!--requestAnimationFrame(render);-->
+        <!--}-->
 
-        window.onload = init;
-    </script>
+        <!--window.onload = init;-->
+    <!--</script>-->
 </body>
 </html>
