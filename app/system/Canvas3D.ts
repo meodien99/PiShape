@@ -327,7 +327,12 @@ module System {
                 event.clientY = touch.clientY;
                 event.touchQ = true;
                 self._onMouseMove(event);
-                event.preventDefault();
+
+                if(event.defaultPrevented)
+                    event.defaultPrevented;
+                else if(event.preventDefault)
+                    event.preventDefault();
+
             }, false);
         }
 
