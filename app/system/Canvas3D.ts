@@ -152,11 +152,11 @@ module System {
         public toggleDrag(){
             this.isDragQ = !this.isDragQ;
             this.toggleBtn("dragBtn", this.isDragQ);
-            if(this.isDragQ){
-                document.getElementById("dragBtn").innerHTML = 'Drag';
-            } else {
-                document.getElementById("dragBtn").innerHTML = 'Spin';
-            }
+            //if(this.isDragQ){
+            //    document.getElementById("dragBtn").innerHTML = 'Drag';
+            //} else {
+            //    document.getElementById("dragBtn").innerHTML = 'Spin';
+            //}
         }
 
         private _setShapesFromPoly() {
