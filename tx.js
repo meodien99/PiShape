@@ -1167,7 +1167,7 @@ var P$;
             //s += '<button id="explodeBtn" onclick="P$.toggleExplode()" style="" class="togglebtn lo" ></button>';
             s += '<a href="javascript:void(0)" onclick="P$.toggleExplode()" class="togglebtn lo" style="display:block; width: ' + eSizeEM / 2.5 + 'em; height : ' + eSizeEM / 2.5 + 'em;font-size: ' + eSizeEM + 'em; left: ' + explodeSpace + 'px; top: 10px;z-index:2;" id="explodeBtn"><i class="icon-bombs1"></i></a>';
             s += '<div style="position: absolute; top: 3px; right: 5px; font: 18px Arial; z-index: 2">';
-            s += "Coloring: ";
+            s += "Color: ";
             s += _getDropDownHTML(['Multi', 'Shaded', 'Two', 'Glass', 'PureGlass', 'Beams'], 'P$.clrChg', 'clrType');
             s += '</div>';
             s += '</div>';
