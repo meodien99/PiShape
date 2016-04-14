@@ -10,30 +10,34 @@ After installing [typescript](http://www.typescriptlang.org)
 In root directory run command.
 
 ```html
-  tsc -out <returend.js> app/<2d | 3d>.ts
+tsc -out <returend.js> app/<2d | 3d>.ts
 ```
-* 2d.ts for generating code of 2D shapes
+
+File named `2d.ts` for generating 2D shapes code file :
 
 ![Plane geometry](assets/git/2d.png)
 
-* 3d.ts for generating code of 3D shapes
+
+And `3d.ts`:
 
 ![Solid geometry](assets/git/cone.png)
 
-## 3D Usages:
-* After generating 3d.ts. Add following line to project
+### 3D Usages:
+
+After generating 3d.ts. Add following lines to project
 ```html
-  <link rel="stylesheet" href="<dir>/assets/pi.style.css"/>
-  <script src="<link_to_your_js_generated_name>.js"></script>
+<link rel="stylesheet" href="<dir>/assets/pi.style.css"/>
+<script src="<link_to_your_js_generated_name>.js"></script>
 ```
-* And to usage simple call
+And then, to usage simply call
 ```
-  P$.init({
-    parentId: 'canvas', // the id's parent which contains our canvas element
-    shapeName: 'dodecahedron' // name of shape
-  });
+P$.init({
+  parentId: 'canvas', // the id's parent which contains our canvas element
+  shapeName: 'dodecahedron' // name of shape
+});
 ```
-* 3d shapes now support below shapes :
+
+### 3d shapes now support below shapes :
   1. net
   2. cone
   3. square-pyramid
